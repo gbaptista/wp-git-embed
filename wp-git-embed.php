@@ -36,8 +36,8 @@ if(!class_exists('WP_Git_Embed')) {
       }
 
       // GitHub (Custom Ruby Immersion) - https://github.com/gbaptista/ruby-immersion
-      if(preg_match('/^\[ruby:.*\]/', $code)) {
-        $path = explode('[ruby:', $code);
+      if(preg_match('/^\[ruby_code:.*\]/', $code)) {
+        $path = explode('[ruby_code:', $code);
         $path = explode('/', preg_replace('/\]$/', '', $path[1]));
         if(strlen($path[1]) == 1) $path[1] = '0'.$path[1];
         $file = '[git:https://github.com/gbaptista/ruby-immersion/blob/master/lib/'.$path[0].'/'.$path[1].'.rb]';
@@ -67,7 +67,7 @@ if(!class_exists('WP_Git_Embed')) {
         $raw = file_get_contents($raw);
 
         // GitHub (Custom Ruby Immersion) - https://github.com/gbaptista/ruby-immersion
-        if(preg_match('/^\[ruby:.*\]/', $code)) {
+        if(preg_match('/^\[ruby_code:.*\]/', $code)) {
           $raw = preg_replace("/\# encoding\: utf\-8\n{2,}|^\n{1,}/", '', $raw);
         }
 
@@ -98,7 +98,7 @@ if(!class_exists('WP_Git_Embed')) {
 
     public static function beforeFilter( $content ) {
 
-      if(preg_match_all('/\[git:http.*\]|\[ruby.*:.*\]|\[ruby:.*\]/', $content, $results))
+      if(preg_match_all('/\[git:http.*\]|\[ruby.*:.*\]/', $content, $results))
       {
         foreach($results as $result) {
           foreach($result as $file) $content = str_replace($file, self::raw($file), $content);
@@ -106,7 +106,7 @@ if(!class_exists('WP_Git_Embed')) {
       }
 
       # Escape
-      if(preg_match_all('/\[\'git:http.*\]|\[\'ruby.*:.*\]|\[\'ruby:.*\]/', $content, $results))
+      if(preg_match_all('/\[\'git:http.*\]|\[\'ruby.*:.*\]/', $content, $results))
       {
         foreach($results as $result) {
           foreach($result as $file) {
