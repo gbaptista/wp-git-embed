@@ -89,7 +89,8 @@ if(!class_exists('WP_Git_Embed')) {
         if(!empty($s_line))
           $raw = implode("\n", array_slice(preg_split('/\r\n|\r|\n/', $raw), $s_line-1, ($e_line-$s_line)+1));
 
-        return $raw .= "\n\n# $source";
+        return $raw;
+        # return $raw .= "\n\n# $source"; # Todo.
 
       } else return $code;
 
@@ -103,6 +104,17 @@ if(!class_exists('WP_Git_Embed')) {
           foreach($result as $file) $content = str_replace($file, self::raw($file), $content);
         }
       }
+
+      # Escape
+      if(preg_match_all('/\[\'git:http.*\]|\[\'ruby.*:.*\]|\[\'ruby:.*\]/', $content, $results))
+      {
+        foreach($results as $result) {
+          foreach($result as $file) {
+            $content = str_replace($file, str_replace('[\'', '[', $file), $content);
+          }
+        }
+      }
+
       return $content;
 
     }
