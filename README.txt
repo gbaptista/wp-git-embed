@@ -1,5 +1,5 @@
 === WP-Git-Embed ===
-Contributors: gbaptista
+Contributors: gbaptistas
 Tags: github, git, embed, code, highlight, source, sourcecode, syntax, syntax highlighting
 Requires at least: 3.0.1
 Tested up to: 3.4
