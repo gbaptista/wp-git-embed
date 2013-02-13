@@ -21,4 +21,4 @@ Usage
 Demo
 --------
 
-[WP-Git-Embed: Incluindo Arquivos do Github no seu Post](http://gbaptista.com/2013/02/13/wp-git-embed-incluindo-arquivos-do-github-no-seu-post/)
+[WP-Git-Embed: Incluindo Arquivos do GitHub no seu Post](http://gbaptista.com/2013/02/13/wp-git-embed-incluindo-arquivos-do-github-no-seu-post/)
