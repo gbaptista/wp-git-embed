@@ -1,7 +1,7 @@
 WP-Git-Embed
 --------
 
-[Download](http://wordpress.org/extend/plugins/wp-git-embed/)
+Download: [http://wordpress.org/extend/plugins/wp-git-embed/](http://wordpress.org/extend/plugins/wp-git-embed/)
 
 Usage
 --------
