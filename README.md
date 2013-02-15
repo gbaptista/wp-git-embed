@@ -63,4 +63,4 @@ Usage
 Demo
 --------
 
-[WP-Git-Embed: Incluindo Arquivos do GitHub no seu Post do Wordpress](http://gbaptista.com/2013/02/13/wp-git-embed-incluindo-arquivos-do-github-no-seu-post-do-wordpress/)
+[WP-Git-Embed: Incluindo Arquivos do GitHub, Gist ou Bitbucket no seu Post do WordPress](http://gbaptista.com/2013/02/13/wp-git-embed-incluindo-arquivos-do-github-gist-bitbucket-no-seu-post-do-wordpress/)
