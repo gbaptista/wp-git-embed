@@ -62,6 +62,18 @@ if(!class_exists('WP_Git_Embed')) {
         $raw = str_replace('/blob/', '/', $raw);
       }
 
+      // GitHub Gist - https://gist.github.com/
+      elseif(preg_match('/:\/\/gist.github.com/', $file)) {
+        $source = preg_replace('/^\[git:|\]$/', '', $file);
+        $raw = str_replace('#', '/raw/', $source);
+      }
+
+      // Bitbucket - https://bitbucket.org/
+      elseif(preg_match('/:\/\/bitbucket.org/', $file)) {
+        $source = preg_replace('/^\[git:|\]$/', '', $file);
+        $raw = str_replace('/src/', '/raw/', $source);
+      }
+
       if(!empty($raw)) {
 
         $raw = file_get_contents($raw);
