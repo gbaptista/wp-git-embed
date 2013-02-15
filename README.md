@@ -1,7 +1,7 @@
 WP-Git-Embed
 --------
 
-[Download](https://github.com/gbaptista/wp-git-embed/archive/master.zip)
+[Download](http://wordpress.org/extend/plugins/wp-git-embed/)
 
 Usage
 --------
