@@ -3,7 +3,7 @@
 /*
 Plugin Name: WP-Git-Embed
 Plugin URI: http://wordpress.org/extend/plugins/wp-git-embed/
-Description: Embed GitHub files.
+Description: Embed GitHub, Gist or Bitbucket files.
 Version: 0.2
 Author: Guilherme Baptista
 Author URI: http://gbaptista.com
