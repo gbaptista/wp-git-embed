@@ -6,6 +6,8 @@ Download: [http://wordpress.org/extend/plugins/wp-git-embed/](http://wordpress.o
 Usage
 --------
 
+### GitHub
+
 ```
 [git:https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb]
 ```
@@ -16,6 +18,30 @@ Usage
 
 ```
 [git:https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb{6:10}]
+```
+
+### GitHub Gist
+
+```
+[git:https://gist.github.com/gbaptista/4958597#file-a.rb]
+```
+
+```
+[git:https://gist.github.com/gbaptista/4958597#file-a.rb{2:3}]
+```
+
+### Bitbucket
+
+```
+[git:https://bitbucket.org/gbaptista/test/src/7a350b304059b49616fee1870c59f53a8149db4a/lorem/file.rb?at=master]
+```
+
+```
+[git:https://bitbucket.org/gbaptista/test/src/7a350b304059b49616fee1870c59f53a8149db4a/lorem/file.rb]
+```
+
+```
+[git:https://bitbucket.org/gbaptista/test/src/7a350b304059b49616fee1870c59f53a8149db4a/lorem/file.rb{2,3}]
 ```
 
 ### With [WP-Syntax](http://wordpress.org/extend/plugins/wp-syntax/)
