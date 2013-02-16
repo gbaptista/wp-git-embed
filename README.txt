@@ -7,7 +7,7 @@ Stable tag: 0.2
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
-Embed GitHub files.
+Embed GitHub, Gist or Bitbucket files.
 
 == Description ==
 
