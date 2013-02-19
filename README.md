@@ -1,6 +1,8 @@
 WP-Git-Embed
 --------
 
+WordPress Plugin: Embed GitHub/Gist/Bitbucket files.
+
 Download: [http://wordpress.org/extend/plugins/wp-git-embed/](http://wordpress.org/extend/plugins/wp-git-embed/)
 
 Demo
