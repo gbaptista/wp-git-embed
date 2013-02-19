@@ -7,7 +7,7 @@ Stable tag: 0.2
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
-Embed GitHub, Gist or Bitbucket files.
+Embed GitHub files.
 
 == Description ==
 
@@ -27,4 +27,4 @@ See: https://github.com/gbaptista/wp-git-embed
 == Upgrade Notice ==
 
 = 0.2 =
-* GitHub Gist and Bitbucket support.
+GitHub Gist and Bitbucket support.
