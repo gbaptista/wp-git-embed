@@ -4,7 +4,7 @@
 Plugin Name: WP-Git-Embed
 Plugin URI: http://wordpress.org/extend/plugins/wp-git-embed/
 Description: Embed GitHub, Gist or Bitbucket files.
-Version: 0.3
+Version: 0.4
 Author: Guilherme Baptista
 Author URI: http://gbaptista.com
 License: MIT
@@ -143,6 +143,7 @@ if(!class_exists('WP_Git_Embed')) {
         if($links) {
 
           $file_name = preg_replace('/#.*/', '', end(preg_split('/\/|\\\/', $link)));
+          $file_name = preg_replace('/\?.*/', '', $file_name);
 
           //echo $source . '<br />' . $link; exit;
 
@@ -187,7 +188,7 @@ if(!class_exists('WP_Git_Embed')) {
       }
 
       # Escape
-      if(preg_match_all('/\[\'git.*:http.*\]|\[\'file:.*\]|\[\'ruby.*:.*\]/', $content, $results))
+      if(preg_match_all('/\[\'git.*\]|\[\'file:.*\]|\[\'ruby.*:.*\]/', $content, $results))
       {
         foreach($results as $result) {
           foreach($result as $file) {
