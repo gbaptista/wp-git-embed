@@ -17,17 +17,13 @@ Usage
 ### With [WP-Syntax](http://wordpress.org/extend/plugins/wp-syntax/)
 
 ```html
-<pre lang="ruby" line="1">
-[git:https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb]
-</pre>
+[git:pre_ruby@https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb]
 ```
 
 ### With [SyntaxHighlighter](http://wordpress.org/extend/plugins/syntaxhighlighter/)
 
 ```html
-[sourcecode language="ruby"]
-[git:https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb]
-[/sourcecode]
+[git:sourcecode_ruby@https://github.com/rails/rails/blob/3-1-stable/railties/lib/rails/version.rb]
 ```
 
 ### GitHub
@@ -65,5 +61,19 @@ Usage
 ```
 
 ```
-[git:https://bitbucket.org/gbaptista/test/src/7a350b304059b49616fee1870c59f53a8149db4a/lorem/file.rb{2,3}]
+[git:https://bitbucket.org/gbaptista/test/src/7a350b304059b49616fee1870c59f53a8149db4a/lorem/file.rb{2:3}]
+```
+
+### Custom Files
+
+```
+[file:http://your-site/file.txt]
+```
+
+```
+[file:http://your-site/file.txt{2:3}]
+```
+
+```
+[file:/var/www/file.txt]
 ```

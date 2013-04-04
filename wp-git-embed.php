@@ -4,7 +4,7 @@
 Plugin Name: WP-Git-Embed
 Plugin URI: http://wordpress.org/extend/plugins/wp-git-embed/
 Description: Embed GitHub, Gist or Bitbucket files.
-Version: 0.2
+Version: 0.3
 Author: Guilherme Baptista
 Author URI: http://gbaptista.com
 License: MIT
@@ -35,6 +35,15 @@ if(!class_exists('WP_Git_Embed')) {
         $code = preg_replace('/\{[0-9].*\}/', '', $code);
       }
 
+      if(preg_match('/:.*@.*]/', $code, $format)) {
+
+        $format = explode('@', $format[0]);
+        $format = str_replace(':', '', $format[0]);
+
+        $code = str_replace($format.'@', '', $code);
+
+      }
+
       // GitHub (Custom Ruby Immersion) - https://github.com/gbaptista/ruby-immersion
       if(preg_match('/^\[ruby_code:.*\]/', $code)) {
         $path = explode('[ruby_code:', $code);
@@ -60,21 +69,32 @@ if(!class_exists('WP_Git_Embed')) {
         if(!empty($s_line)) $source .= "#L$s_line";
         $raw = str_replace('://github.com', '://raw.github.com', $source);
         $raw = str_replace('/blob/', '/', $raw);
+        $service = 'github';
       }
 
       // GitHub Gist - https://gist.github.com/
       elseif(preg_match('/:\/\/gist.github.com/', $file)) {
         $source = preg_replace('/^\[git:|\]$/', '', $file);
         $raw = str_replace('#', '/raw/', $source);
+        $service = 'gist';
       }
 
       // Bitbucket - https://bitbucket.org/
       elseif(preg_match('/:\/\/bitbucket.org/', $file)) {
         $source = preg_replace('/^\[git:|\]$/', '', $file);
         $raw = str_replace('/src/', '/raw/', $source);
+        $service = 'bitbucket';
+      } else {
+
+        $source = NULL;
+        $raw = preg_replace('/^\[file:|\]$/', '', $file);
+        $service = NULL;
+
       }
 
       if(!empty($raw)) {
+
+        $link = $raw;
 
         $raw = file_get_contents($raw);
 
@@ -100,6 +120,55 @@ if(!class_exists('WP_Git_Embed')) {
 
         if(!empty($s_line))
           $raw = implode("\n", array_slice(preg_split('/\r\n|\r|\n/', $raw), $s_line-1, ($e_line-$s_line)+1));
+        else {
+          $s_line = 1;
+        }
+
+        if(!empty($format)) {
+          if(preg_match('/^pre.*/', $format)) {
+            $format = explode('_', $format);
+            $raw = '<pre lang="'. $format[1] .'" line="'.$s_line.'">' . $raw . '</pre>';
+            $links = TRUE;
+            $format = 'pre';
+          } elseif(preg_match('/^sourcecode.*/', $format)) {
+            $format = explode('_', $format);
+            $raw = '[sourcecode language="'.$format[1].'"]' . $raw . '[/sourcecode]';
+            $links = TRUE;
+            $format = 'sourcecode';
+          } else {
+            $links = FALSE;
+          }
+        } else $links = FALSE;
+
+        if($links) {
+
+          $file_name = preg_replace('/#.*/', '', end(preg_split('/\/|\\\/', $link)));
+
+          //echo $source . '<br />' . $link; exit;
+
+          if($format == 'pre')
+           $raw .= '<div class="wp-git-embed" style="margin-bottom:10px; background-color:#def; border:1px solid #CCC; text-align:right; width:99%; margin-top:-21px; font-size:11px; font-style:italic;"><span style="display:inline-block; padding:4px;">'.$file_name.'</span>';
+          else
+            $raw .= '<div class="wp-git-embed" style="margin-bottom:10px; border:1px solid #CCC; text-align:right; width:99%; margin-top:-13px; font-size:11px; font-style:italic;"><span style="display:inline-block; padding:4px;">'.$file_name.'</span>';
+
+          if(preg_match('/^http.*:/', $link)) {
+
+            if(empty($source))
+              $raw .= '<a style="display:inline-block; padding:4px 6px;" href="' . $link . '" target="_blank">download file</a>';
+            else {
+              $raw .= '<a style="display:inline-block; padding:4px 6px;" href="' . $link . '" target="_blank">view raw</a>';
+              $raw .= '<a style="display:inline-block; padding:4px 6px; float:left;" href="' . $source . '" target="_blank">view file on ';
+
+              if($service == 'github') $raw .= '<strong>GitHub</strong></a>';
+              elseif($service == 'gist') $raw .= '<strong>GitHub Gist</strong></a>';
+              elseif($service == 'bitbucket') $raw .= ' <strong>Bitbucket</strong></a>';
+            }
+            
+          }
+
+          $raw .= '</div>';
+
+        }
 
         return $raw;
         # return $raw .= "\n\n# $source"; # Todo.
@@ -110,7 +179,7 @@ if(!class_exists('WP_Git_Embed')) {
 
     public static function beforeFilter( $content ) {
 
-      if(preg_match_all('/\[git:http.*\]|\[ruby.*:.*\]/', $content, $results))
+      if(preg_match_all('/\[git:.*http.*\]|\[file:.*\]|\[ruby.*:.*\]/', $content, $results))
       {
         foreach($results as $result) {
           foreach($result as $file) $content = str_replace($file, self::raw($file), $content);
@@ -118,7 +187,7 @@ if(!class_exists('WP_Git_Embed')) {
       }
 
       # Escape
-      if(preg_match_all('/\[\'git:http.*\]|\[\'ruby.*:.*\]/', $content, $results))
+      if(preg_match_all('/\[\'git.*:http.*\]|\[\'file:.*\]|\[\'ruby.*:.*\]/', $content, $results))
       {
         foreach($results as $result) {
           foreach($result as $file) {
