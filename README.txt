@@ -1,9 +1,9 @@
 === WP-Git-Embed ===
-Contributors: gbaptistas
+Contributors: gbaptistas, willybahuaud
 Tags: github, gist, bitbucket, git, embed, code, highlight, source, sourcecode, syntax, syntax highlighting
 Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 0.4
+Tested up to: 3.6.0
+Stable tag: 0.5
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -20,6 +20,9 @@ See: https://github.com/gbaptista/wp-git-embed
 See: https://github.com/gbaptista/wp-git-embed
 
 == Changelog ==
+
+= 0.5 =
+* Add Prism support.
 
 = 0.4 =
 * Fix file names.

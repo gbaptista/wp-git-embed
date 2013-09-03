@@ -4,12 +4,12 @@
 Plugin Name: WP-Git-Embed
 Plugin URI: http://wordpress.org/extend/plugins/wp-git-embed/
 Description: Embed GitHub, Gist or Bitbucket files.
-Version: 0.4
-Author: Guilherme Baptista
+Version: 0.5
+Author: Guilherme Baptista, Willy Bahuaud
 Author URI: http://gbaptista.com
 License: MIT
 */
-
+DEFINE( 'GITPLUGINURL', trailingslashit( WP_PLUGIN_URL ) . basename( dirname( __FILE__ ) ) );
 if(!class_exists('WP_Git_Embed')) {
 
   class WP_Git_Embed {
@@ -27,8 +27,17 @@ if(!class_exists('WP_Git_Embed')) {
       add_filter('comment_text', array(__CLASS__, 'beforeFilter'), -1);
     }
 
-    private static function raw($code) {
+    
 
+    private static function raw($code) {
+      /**
+
+      */
+      $transientname = 'code_wge_' . substr( md5( $code ), 0, 29 ); // I CHANGED TRANSIENT PREFIXE
+      if( false === apply_filters( 'cache_embeded_code', ( $raw = get_transient( $transientname ) ) ) ) {
+      /**
+
+      */
       if(preg_match('/\{[0-9].*\}/', $code, $lines)) {
         list($s_line, $e_line) = explode(':', preg_replace('/\{|\}/', '', $lines[0]));
         if(empty($e_line)) $e_line = $s_line;
@@ -44,24 +53,8 @@ if(!class_exists('WP_Git_Embed')) {
 
       }
 
-      // GitHub (Custom Ruby Immersion) - https://github.com/gbaptista/ruby-immersion
-      if(preg_match('/^\[ruby_code:.*\]/', $code)) {
-        $path = explode('[ruby_code:', $code);
-        $path = explode('/', preg_replace('/\]$/', '', $path[1]));
-        if(strlen($path[1]) == 1) $path[1] = '0'.$path[1];
-        $file = '[git:https://github.com/gbaptista/ruby-immersion/blob/master/lib/'.$path[0].'/'.$path[1].'.rb]';
-      }
-
-      // GitHub (Custom Ruby Immersion Test) - https://github.com/gbaptista/ruby-immersion
-      elseif(preg_match('/^\[ruby_test:.*\]/', $code)) {
-        $path = explode('[ruby_test:', $code);
-        $path = explode('/', preg_replace('/\]$/', '', $path[1]));
-        if(strlen($path[1]) == 1) $path[1] = '0'.$path[1];
-        $file = '[git:https://github.com/gbaptista/ruby-immersion/blob/master/test/'.$path[0].'/test_'.$path[1].'.rb]';
-      }
-
       // Default
-      else $file = $code;
+      $file = $code;
 
       // GitHub - https://github.com/
       if(preg_match('/:\/\/github.com/', $file)) {
@@ -96,85 +89,78 @@ if(!class_exists('WP_Git_Embed')) {
 
         $link = $raw;
 
-        $raw = file_get_contents($raw);
+          $raw = file_get_contents($raw);
 
-        // GitHub (Custom Ruby Immersion) - https://github.com/gbaptista/ruby-immersion
-        if(preg_match('/^\[ruby_code:.*\]/', $code)) {
-          $raw = preg_replace("/\# encoding\: utf\-8\n{2,}|^\n{1,}/", '', $raw);
-        }
+          $raw = preg_replace("/\</", '&lt;', trim($raw));
+          $raw = preg_replace("/\>/", '&gt;', trim($raw));
 
-        // GitHub (Custom Ruby Immersion Test) - https://github.com/gbaptista/ruby-immersion
-        elseif(preg_match('/^\[ruby_test:.*\]/', $code)) {
-          $raw = str_replace("require 'test/unit'", '', $raw);
-          $raw = str_replace("require 'include_file'", '', $raw);
-          $raw = str_replace("IncludeFile::inject __FILE__", '', $raw);
-          $raw = preg_replace("/class LoveTest.* \< Test\:\:Unit\:\:TestCase/", '', $raw);
-          $raw = str_replace("def test_with_love", '', $raw);
-          $raw = preg_replace("/end$/", '', trim($raw));
-          $raw = preg_replace("/end$/", '', trim($raw));
-          $raw = preg_replace("/    /", '', trim($raw));
-          $raw = preg_replace("/\n{2,}/", "\n\n", trim($raw));
-          $raw = preg_replace("/\# encoding\: utf\-8/", '', trim($raw));
-          $raw = preg_replace("/^\n{1,}/", '', trim($raw));
-        }
-
-        if(!empty($s_line))
-          $raw = implode("\n", array_slice(preg_split('/\r\n|\r|\n/', $raw), $s_line-1, ($e_line-$s_line)+1));
-        else {
-          $s_line = 1;
-        }
-
-        if(!empty($format)) {
-          if(preg_match('/^pre.*/', $format)) {
-            $format = explode('_', $format);
-            $raw = '<pre lang="'. $format[1] .'" line="'.$s_line.'">' . $raw . '</pre>';
-            $links = TRUE;
-            $format = 'pre';
-          } elseif(preg_match('/^sourcecode.*/', $format)) {
-            $format = explode('_', $format);
-            $raw = '[sourcecode language="'.$format[1].'"]' . $raw . '[/sourcecode]';
-            $links = TRUE;
-            $format = 'sourcecode';
-          } else {
-            $links = FALSE;
+          if(!empty($s_line))
+            $raw = implode("\n", array_slice(preg_split('/\r\n|\r|\n/', $raw), $s_line-1, ($e_line-$s_line)+1));
+          else {
+            $s_line = 1;
           }
-        } else $links = FALSE;
 
-        if($links) {
-
-          $file_name = preg_replace('/#.*/', '', end(preg_split('/\/|\\\/', $link)));
-          $file_name = preg_replace('/\?.*/', '', $file_name);
-
-          //echo $source . '<br />' . $link; exit;
-
-          if($format == 'pre')
-           $raw .= '<div class="wp-git-embed" style="margin-bottom:10px; background-color:#def; border:1px solid #CCC; text-align:right; width:99%; margin-top:-21px; font-size:11px; font-style:italic;"><span style="display:inline-block; padding:4px;">'.$file_name.'</span>';
-          else
-            $raw .= '<div class="wp-git-embed" style="margin-bottom:10px; border:1px solid #CCC; text-align:right; width:99%; margin-top:-13px; font-size:11px; font-style:italic;"><span style="display:inline-block; padding:4px;">'.$file_name.'</span>';
-
-          if(preg_match('/^http.*:/', $link)) {
-
-            if(empty($source))
-              $raw .= '<a style="display:inline-block; padding:4px 6px;" href="' . $link . '" target="_blank">download file</a>';
-            else {
-              $raw .= '<a style="display:inline-block; padding:4px 6px;" href="' . $link . '" target="_blank">view raw</a>';
-              $raw .= '<a style="display:inline-block; padding:4px 6px; float:left;" href="' . $source . '" target="_blank">view file on ';
-
-              if($service == 'github') $raw .= '<strong>GitHub</strong></a>';
-              elseif($service == 'gist') $raw .= '<strong>GitHub Gist</strong></a>';
-              elseif($service == 'bitbucket') $raw .= ' <strong>Bitbucket</strong></a>';
+          if(!empty($format)) {
+             if(preg_match('/^precode.*/', $format)) {
+              $format = explode('_', $format);
+              $raw = '<pre class="language-'. $format[1] .'"><code class="language-'. $format[1] .'" line="'.$s_line.'">' . $raw . '</code></pre>';
+              $links = TRUE;
+              $format = 'pre';
+            } elseif(preg_match('/^pre.*/', $format)) {
+              $format = explode('_', $format);
+              $raw = '<pre lang="'. $format[1] .'" line="'.$s_line.'">' . $raw . '</pre>';
+              $links = TRUE;
+              $format = 'pre';
+            } elseif(preg_match('/^sourcecode.*/', $format)) {
+              $format = explode('_', $format);
+              $raw = '[sourcecode language="'.$format[1].'"]' . $raw . '[/sourcecode]';
+              $links = TRUE;
+              $format = 'sourcecode';
+            } else {
+              $links = FALSE;
             }
+          } else $links = FALSE;
+
+          if($links) {
+
+            $file_name = preg_replace('/#.*/', '', end(preg_split('/\/|\\\/', $link)));
+            $file_name = preg_replace('/\?.*/', '', $file_name);
+
+            if($format == 'pre' || $format == 'precode')
+             $raw .= '<div class="wp-git-embed"><span class="filename">'.$file_name.'</span>';
+            else
+              $raw .= '<div class="wp-git-embed"><span class="filename">'.$file_name.'</span>';
+
+            if(preg_match('/^http.*:/', $link)) {
+
+              if(empty($source))
+                $raw .= '<a class="github" href="' . $link . '" target="_blank">download file</a>';
+              else {
+                $raw .= '<a class="raw" href="' . $link . '" target="_blank">view raw</a>';
+                $raw .= '<a class="github" href="' . $source . '" target="_blank">view file on ';
+
+                if($service == 'github') $raw .= '<strong>GitHub</strong></a>';
+                elseif($service == 'gist') $raw .= '<strong>GitHub Gist</strong></a>';
+                elseif($service == 'bitbucket') $raw .= ' <strong>Bitbucket</strong></a>';
+              }
+              
+            }
+
+            $raw .= '</div>';
             
           }
-
-          $raw .= '</div>';
-
-        }
-
+          set_transient( $transientname, htmlspecialchars( $raw ) ); // I REMOVED TIME ARGUMENT
+        
         return $raw;
         # return $raw .= "\n\n# $source"; # Todo.
 
+      /**
+
+      */
       } else return $code;
+      } else {
+          return htmlspecialchars_decode( $raw );
+      }
 
     }
 
@@ -206,4 +192,29 @@ if(!class_exists('WP_Git_Embed')) {
   function WP_Git_Embed() { return WP_Git_Embed::getInstance(); }
   add_action( 'plugins_loaded', 'WP_Git_Embed' );
 
+  function enqueue_prismjs(){
+      wp_register_script( 'prismjs', GITPLUGINURL.'/js/prism.js', array('jquery'), '0.9', true );
+      wp_register_style( 'prismcss', GITPLUGINURL.'/css/' . apply_filters( 'prism_css', 'prism-okaidia' ) . '.css', false, '0.95', 'all' );      
+      wp_enqueue_style( 'prismcss' );
+      wp_enqueue_script( 'jquery' );
+      wp_enqueue_script( 'prismjs' );
+    }
+  add_action( 'wp_enqueue_scripts', 'enqueue_prismjs' );
+}
+
+add_action('emptying_code_transient', 'drop_wge_transients');
+
+/**
+false cron :-)
+*/
+function transient_cleaning() {
+  if ( ! wp_next_scheduled( 'emptying_code_transient' ) ) {
+    wp_schedule_event( time(), apply_filters( 'emptying_code_transient', 'weekly' ), 'emptying_code_transient' );
+  }
+}
+add_action('wp', 'transient_cleaning');
+
+function drop_wge_transients() {
+  global $wpdb;
+  $wpdb->query( $wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_code_wge_%'") );
 }
