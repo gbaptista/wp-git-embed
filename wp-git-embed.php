@@ -82,7 +82,7 @@ if(!class_exists('WP_Git_Embed')) {
       // Bitbucket - https://bitbucket.org/
       elseif(preg_match('/:\/\/bitbucket.org/', $file)) {
         $source = preg_replace('/^\[git:|\]$/', '', $file);
-        $raw = str_replace('/src/', '/raw/', $source);
+        $raw = implode('/raw/',explode('/src/',$source,2));
         $service = 'bitbucket';
       } else {
 
